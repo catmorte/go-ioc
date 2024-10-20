@@ -17,28 +17,39 @@ type (
 	}
 
 	dependencyRequest struct {
-		Type   any
-		Waiter chan any
-		Scope  string
+		Type        any
+		Waiter      chan any
+		Scope       string
+		toInterface bool
 	}
 
 	Context interface {
-		Ask(interfaceNil any) chan interface{}
 		Reg(interfaceNil any, constructor func() interface{}, request ...*dependencyRequest)
+		Ask(interfaceNil any) chan interface{}
+		AskInterface(interfaceNil any) chan interface{}
 
 		RegScoped(scope string, interfaceNil any, constructor func() interface{}, request ...*dependencyRequest)
 		AskScoped(scope string, interfaceNil any) chan interface{}
+		AskInterfaceScoped(scope string, interfaceNil any) chan interface{}
 
 		GetUnresolvedRequests() []*dependencyRequest
 	}
 )
 
+func DepInterface[T any]() *dependencyRequest {
+	return &dependencyRequest{(*T)(nil), make(chan any, 1), DefaultScope, true}
+}
+
+func DepInterfaceScoped[T any](scope string) *dependencyRequest {
+	return &dependencyRequest{(*T)(nil), make(chan any, 1), scope, true}
+}
+
 func Dep[T any]() *dependencyRequest {
-	return &dependencyRequest{(*T)(nil), make(chan any, 1), DefaultScope}
+	return &dependencyRequest{(*T)(nil), make(chan any, 1), DefaultScope, false}
 }
 
 func DepScoped[T any](scope string) *dependencyRequest {
-	return &dependencyRequest{(*T)(nil), make(chan any, 1), scope}
+	return &dependencyRequest{(*T)(nil), make(chan any, 1), scope, false}
 }
 
 func SetContext(context Context) {
@@ -61,6 +72,14 @@ func Ask[T any]() T {
 	return value.(T)
 }
 
+func AskInterface[T any]() T {
+	value := (<-GetContext().AskInterface((*T)(nil)))
+	if prototype, ok := value.(*prototype[T]); ok {
+		return prototype.constructor()
+	}
+	return value.(T)
+}
+
 func Reg[T any](constructor func() T, request ...*dependencyRequest) {
 	GetContext().Reg((*T)(nil), typeToAnyFunc[T](constructor), request...)
 }
@@ -73,6 +92,14 @@ func RegPrototype[T any](constructor func() T, request ...*dependencyRequest) {
 
 func AskScoped[T any](scope string) T {
 	value := (<-GetContext().AskScoped(scope, (*T)(nil)))
+	if prototype, ok := value.(*prototype[T]); ok {
+		return prototype.constructor()
+	}
+	return value.(T)
+}
+
+func AskInterfaceScoped[T any](scope string) T {
+	value := (<-GetContext().AskInterfaceScoped(scope, (*T)(nil)))
 	if prototype, ok := value.(*prototype[T]); ok {
 		return prototype.constructor()
 	}

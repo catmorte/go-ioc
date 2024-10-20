@@ -8,6 +8,7 @@ const (
 	IocPkgPrototypePath  = "github.com/catmorte/go-ioc/pkg/context/prototype"
 	IocPkgPrototypeAlias = "prototype"
 
-	IocTag            = "bean"
-	IocBeanStructName = "Bean"
+	IocTag               = "bean"
+	IocBeanStructName    = "Bean"
+	IocInterfaceTagValue = "interface"
 )

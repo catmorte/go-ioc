@@ -18,5 +18,6 @@ func main() {
 	dependentBean1 := Ask[*dependent.DependentObj]()
 	dependentBean2 := Ask[*dependent.DependentObj]()
 	fmt.Println(dependentBean1.IndependentObj1.SomeDepField)
+	dependentBean1.IndependentObj3.SomeSpecificLogicFunc()
 	fmt.Println(dependentBean2.IndependentObj2.SimpleValue)
 }

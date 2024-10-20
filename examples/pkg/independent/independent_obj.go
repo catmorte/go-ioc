@@ -15,6 +15,19 @@ type IndependentObj2 struct {
 	SimpleValue                     int
 }
 
+type independentObj3 struct {
+	singleton.Bean[independentObj3] `bean:""`
+	SimpleValue                     int
+}
+
+func (i independentObj3) SomeSpecificLogicFunc() {
+	println(i.SimpleValue)
+}
+
+func (i *independentObj3) Init() {
+	i.SimpleValue = 69
+}
+
 func (o *IndependentObj2) Init() {
 	o.SimpleValue = 42
 }

@@ -9,13 +9,15 @@ import (
 func init() {
 	dep0_0 := goIoc0.DepScoped[*independent.IndependentObj1]("independentScope1")
 	dep0_1 := goIoc0.DepScoped[independent.IndependentObj2]("independentScope2")
+	dep0_2 := goIoc0.DepInterface[SomeInterface]()
 	goIoc0.RegPrototype(func() *DependentObj {
 		v := &DependentObj{
 			IndependentObj1: goIoc0.ResolveDep[*independent.IndependentObj1](dep0_0),
 			IndependentObj2: goIoc0.ResolveDep[independent.IndependentObj2](dep0_1),
+			IndependentObj3: goIoc0.ResolveDep[SomeInterface](dep0_2),
 		}
 		v.Init()
 		return v
-	}, dep0_0, dep0_1)
+	}, dep0_0, dep0_1, dep0_2)
 
 }

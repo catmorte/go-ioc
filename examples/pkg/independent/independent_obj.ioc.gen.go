@@ -19,5 +19,10 @@ func init() {
 		v.Init()
 		return v
 	})
+	goIoc0.RegScoped("", func() independentObj3 {
+		v := independentObj3{}
+		v.Init()
+		return v
+	})
 
 }

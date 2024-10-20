@@ -6,8 +6,13 @@ import (
 	. "github.com/catmorte/go-ioc/pkg/context/prototype"
 )
 
+type SomeInterface interface {
+	SomeSpecificLogicFunc()
+}
+
 type DependentObj struct {
 	Bean[*DependentObj]
 	IndependentObj1 *independent.IndependentObj1 `bean:"independentScope1"`
 	IndependentObj2 independent.IndependentObj2  `bean:"independentScope2"`
+	IndependentObj3 SomeInterface                `bean:",interface"`
 }

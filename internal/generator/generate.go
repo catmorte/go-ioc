@@ -32,11 +32,7 @@ func init() {
 	{{range $structIndex, $struct := .File.Structs -}} 
 		{{range $fieldIndex, $field := $struct.Fields -}} 
 			{{if $field.Meta.Tag -}}
-				{{if eq (DerefString $field.Meta.Tag) "" -}}
-				dep{{$structIndex}}_{{ $fieldIndex }} := {{$.IocPackageAlias}}Dep[{{$field.Code}}]()
-	  		{{else -}}
-				dep{{$structIndex}}_{{ $fieldIndex }} := {{$.IocPackageAlias}}DepScoped[{{$field.Code}}]("{{DerefString $field.Meta.Tag}}")
-  			{{end -}}
+				dep{{$structIndex}}_{{ $fieldIndex }} := {{$.IocPackageAlias}}{{Dep $field}}
   		{{end -}}
   	{{end -}}
 		{{$.IocPackageAlias}}{{Reg $struct $.File.Imports}}func() {{Ret $struct}} {
@@ -118,6 +114,26 @@ func parseTemplate() (*template.Template, error) {
 				}
 			}
 			return "RegUnknown"
+		},
+		"Dep": func(f *declaration.Type[declaration.StructFieldMeta]) string {
+			if f.Meta.Tag != nil {
+				name := "Dep"
+				scopeArgument := ""
+				params := strings.Split(*f.Meta.Tag, ",")
+				scope := params[0]
+				if len(params) > 1 {
+					if params[1] == declaration.IocInterfaceTagValue {
+						name += "Interface"
+					}
+				}
+				scope = strings.TrimSpace(scope)
+				if scope != "" {
+					name += "Scoped"
+					scopeArgument = `"` + scope + `"`
+				}
+				return fmt.Sprintf("%s[%s](%s)", name, f.Code, scopeArgument)
+			}
+			return "DepUnknown"
 		},
 	}).Parse(fileTemplate)
 }
