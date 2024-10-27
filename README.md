@@ -102,7 +102,7 @@ It's possible to generate boilerplate code based on structure definitions. To do
 
 - Install `go-ioc`
 - Add `//go:generate go-ioc` to the file
-- Add {{strategy}}.Bean[resultType] to the structure for which code generation is needed, where **{{strategy}}** is either singleton from `github.com/go-ioc/pkg/context/singleton` or prototype from `github.com/go-ioc/pkg/context/prototype`.
+- Add `{{strategy}}.Bean[resultType]` to the structure for which code generation is needed, where **{{strategy}}** is either singleton from `github.com/go-ioc/pkg/context/singleton` or prototype from `github.com/go-ioc/pkg/context/prototype`.
 - Add the `bean:""` tag to the root fields that require injection. (To use a non-default scope, specify the scope name in the tag like `bean:"someScope"`). If the tag is defined for the Bean itself, the bean will be scoped accordingly. You can also define interface injections by setting interface as the second value in the tag, e.g., `bean:"someScope,interface"` or `bean:",interface"`.
 - call `go generate ./...`
 - Finally, import all the necessary packages in your main.go like so:
